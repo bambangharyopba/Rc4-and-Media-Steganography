@@ -281,23 +281,6 @@ typebox3 = ttk.Combobox(tab3, width=27, state="readonly", textvariable=c)
 typebox3['values'] = ('Image', 'Audio')
 
 
-typebox3.grid(column=1, row=2, columnspan=2)
-typebox3.current(0)
-file_label = Label(
-    tab3, text="File A").grid(row=3, column=0)
-file = Button(tab3, text="Browse", command=load_file, width=10)
-file.grid(row=3, column=1, sticky=W)
-fileStego_label = Label(
-    tab3, text="File B").grid(row=4, column=0)
-fileStego = Button(tab3, text="Browse",
-                   command=load_fileS, width=10)
-fileStego.grid(row=4, column=1, sticky=W)
-cal_bt = Button(tab2, text="Calculate", command=cal)
-cal_bt.grid(row=5, column=0)
-outputP = Text(tab3)
-outputP.grid(row=6, column=0, columnspan=10)
-
-
 def cal():
     outputP.delete('1.0', END)
     if (typebox3.get() == "Image"):
@@ -324,6 +307,23 @@ def cal():
         outputP.insert(END, psnr(wav_data_a, wav_data_b, size, 255))
 
         print("PSNR:", psnr(wav_data_a, wav_data_b, size, 255))
+
+
+typebox3.grid(column=1, row=2, columnspan=2)
+typebox3.current(0)
+file_label = Label(
+    tab3, text="File A").grid(row=3, column=0)
+file = Button(tab3, text="Browse", command=load_file, width=10)
+file.grid(row=3, column=1, sticky=W)
+fileStego_label = Label(
+    tab3, text="File B").grid(row=4, column=0)
+fileStego = Button(tab3, text="Browse",
+                   command=load_fileS, width=10)
+fileStego.grid(row=4, column=1, sticky=W)
+cal_bt = Button(tab2, text="Calculate", command=cal)
+cal_bt.grid(row=5, column=0)
+outputP = Text(tab3)
+outputP.grid(row=6, column=0, columnspan=10)
 
 
 def insert():
