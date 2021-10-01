@@ -2,6 +2,7 @@ import wave
 import os
 from rc4 import RC4
 from wav_stego import WavStego
+from img_stego import imgStego, is_grey_scale
 
 # file
 filepath = "./yoyo.gif"
@@ -148,3 +149,27 @@ else:
     print("Text reached maximum size")
     print("aborting...")
 
+# text
+img_path = "./gray.bmp"
+text_in = "ini gambar"
+text_bin = text_in.encode("utf-8")
+
+print("===== Inserting =====")
+print("BMP File:", img_path)
+print("Inserted Text:", text_in)
+print("Inserted Text:", len(text_bin))
+
+insert_out = imgStego.insert(img_path, text_bin, 2)
+
+out_path = "gray_out.bmp"
+img_out = open(out_path, "wb")
+img_out.write(insert_out)
+print("Output IMG:", out_path)
+
+print("=====EXTRACTING=====")
+print("IMG File:", out_path)
+
+extract_out = imgStego.extract(out_path)
+
+# print(extract_out)
+print("Extracted Text:", extract_out.decode("utf-8"))
