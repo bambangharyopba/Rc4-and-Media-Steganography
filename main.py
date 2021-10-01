@@ -5,7 +5,7 @@ from rc4 import RC4
 from wav_stego import WavStego
 from img_stego import imgStego, is_grey_scale
 from PIL import Image
-from psnr import image_psnr
+from psnr import psnr
 
 # file
 filepath = "./yoyo.gif"
@@ -223,10 +223,27 @@ extract_out = imgStego.extract(out_data)
 print("Extracted Text:", extract_out.decode("utf-8"))
 
 # psnr kucing
+print("=====PSNR Image=====")
 im = Image.open("kucing.png")
 data_a = b"".join([byte.to_bytes(1, sys.byteorder)
                    for pixel in list(im.getdata()) for byte in pixel])
 im2 = Image.open("kucing_out.png")
 data_b = b"".join([byte.to_bytes(1, sys.byteorder)
                    for pixel in list(im2.getdata()) for byte in pixel])
-print("PSNR:", image_psnr(data_a, data_b, im.size))
+print("PSNR:", psnr(data_a, data_b, im.size, 255))
+
+# psnr audio
+print("=====PSNR Audio=====")
+wavpath_a = "./Ensoniq-ZR-76-06-BreakBt-90.wav"
+wav_a = wave.open(wavpath_a, "rb")
+wav_data_a = wav_a.readframes(wav_a.getnframes())
+size = (wav_a.getsampwidth() * wav_a.getnchannels(), wav_a.getnframes())
+wav_a.close()
+
+wavpath_b = "wav_out.wav"
+wav_b = wave.open(wavpath_b, "rb")
+wav_data_b = wav_b.readframes(wav_b.getnframes())
+wav_b.close()
+
+
+print("PSNR:", psnr(wav_data_a, wav_data_b, size, 255))
