@@ -259,7 +259,7 @@ typebox1['values'] = ('Text', 'File')
 # label
 ttk.Label(tab2, text="Select File Type:",
           font=("Times New Roman", 10)).grid(column=0,
-                                             row=3)
+                                             row=2)
 
 # Combobox creation
 a = StringVar()
@@ -271,7 +271,7 @@ typebox2['values'] = ('Image', 'Audio')
 # label
 ttk.Label(tab3, text="Select File Type:",
           font=("Times New Roman", 10)).grid(column=0,
-                                             row=3)
+                                             row=2)
 
 # Combobox creation
 c = StringVar()
