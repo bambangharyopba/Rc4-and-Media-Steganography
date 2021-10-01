@@ -173,3 +173,40 @@ extract_out = imgStego.extract(out_path)
 
 # print(extract_out)
 print("Extracted Text:", extract_out.decode("utf-8"))
+print()
+
+# file
+img_path = "./gray.bmp"
+filepath = "./kucing.png"
+split_filepath = os.path.splitext(filepath)
+
+file_in = open(filepath, "rb")
+file_bin = file_in.read()
+file_in.close()
+
+print("===== Inserting =====")
+print("IMG File:", img_path)
+print("Inserted File:", filepath)
+print("Inserted Data:", len(file_bin))
+
+insert_out = imgStego.insert(img_path, file_bin)
+
+out_path = "gray_out.bmp"
+img_out = open(out_path, "wb")
+img_out.write(insert_out)
+
+print("Output IMG:", out_path)
+
+print("=====EXTRACTING=====")
+print("IMG File:", out_path)
+
+extract_out = imgStego.extract(out_path)
+
+out_path = "{}-stego{}".format(
+    split_filepath[len(split_filepath) - 2], split_filepath[-1])
+file_out = open(out_path, "wb")
+file_out.write(extract_out)
+file_out.close()
+
+print("Extracted File:", out_path)
+print()
