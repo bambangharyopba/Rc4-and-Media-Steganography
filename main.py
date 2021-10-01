@@ -5,6 +5,7 @@ from rc4 import RC4
 from wav_stego import WavStego
 from img_stego import imgStego, is_grey_scale
 from PIL import Image
+from psnr import image_psnr
 
 # file
 filepath = "./yoyo.gif"
@@ -191,7 +192,7 @@ print("Extracted Text:", extract_out.decode("utf-8"))
 # text
 img_path = "./kucing.png"
 img = Image.open(img_path)
-out_data = b"".join([byte.to_bytes(1, sys.byteorder)
+in_data = b"".join([byte.to_bytes(1, sys.byteorder)
                     for pixel in list(img.getdata()) for byte in pixel])
 text_in = "ini gambar"
 text_bin = text_in.encode("utf-8")
@@ -203,7 +204,7 @@ print("Inserted Text:", text_in)
 print("Max capacity:", max_cap, "bytes")
 print("Inserted Text:", len(text_bin), "bytes")
 
-insert_out = imgStego.insert(out_data, text_bin, 2)
+insert_out = imgStego.insert(in_data, text_bin, 2)
 
 out_path = "kucing_out.png"
 img_out = Image.frombytes(img.mode, img.size, insert_out)
@@ -220,40 +221,12 @@ out_data = b"".join([byte.to_bytes(1, sys.byteorder)
 extract_out = imgStego.extract(out_data)
 
 print("Extracted Text:", extract_out.decode("utf-8"))
-print()
 
-# file
-img_path = "./gray.bmp"
-filepath = "./kucing.png"
-split_filepath = os.path.splitext(filepath)
-
-file_in = open(filepath, "rb")
-file_bin = file_in.read()
-file_in.close()
-
-print("===== Inserting =====")
-print("IMG File:", img_path)
-print("Inserted File:", filepath)
-print("Inserted Data:", len(file_bin))
-
-insert_out = imgStego.insert(img_path, file_bin)
-
-out_path = "gray_out.bmp"
-img_out = open(out_path, "wb")
-img_out.write(insert_out)
-
-print("Output IMG:", out_path)
-
-print("=====EXTRACTING=====")
-print("IMG File:", out_path)
-
-extract_out = imgStego.extract(out_path)
-
-out_path = "{}-stego{}".format(
-    split_filepath[len(split_filepath) - 2], split_filepath[-1])
-file_out = open(out_path, "wb")
-file_out.write(extract_out)
-file_out.close()
-
-print("Extracted File:", out_path)
-print()
+# psnr kucing
+im = Image.open("kucing.png")
+data_a = b"".join([byte.to_bytes(1, sys.byteorder)
+                   for pixel in list(im.getdata()) for byte in pixel])
+im2 = Image.open("kucing_out.png")
+data_b = b"".join([byte.to_bytes(1, sys.byteorder)
+                   for pixel in list(im2.getdata()) for byte in pixel])
+print("PSNR:", image_psnr(data_a, data_b, im.size))
