@@ -18,20 +18,7 @@ print()
 
 
 class imgStego:
-    def insert(img_path, data, seed=0):
-        file_img = open(img_path, 'rb')
-        img_byte = file_img.read()
-        file_img.close()
-
-        if (img_path.split(".")[-1] == "png"):
-            data_header = img_byte[0:8]
-            data_placeholder = img_byte[8:]
-        elif (img_path.split(".")[-1] == "bmp"):
-            data_header = img_byte[0:54]
-            data_placeholder = img_byte[54:]
-
-        if (len(data) > len(data_placeholder)/8):
-            return 0
+    def insert(img_data, data, seed=0):
 
         if seed < 0 or seed > 255:
             return
@@ -50,7 +37,7 @@ class imgStego:
             1, sys.byteorder) + data + b"EOD"  # end of data
         output_data = bytes()
         insert_seed = False
-        for i, byte in enumerate(data_placeholder):
+        for i, byte in enumerate(img_data):
             if not insert_seed:
                 data_bit = getBit(
                     data_modified, data_byte_pointer, 7 - data_bit_pointer)
@@ -76,20 +63,10 @@ class imgStego:
             else:
                 data_pointer = i
                 break
-        output_data += data_placeholder[i:]
-        return data_header + output_data
 
-    def extract(img_path):
-        file_img = open(img_path, 'rb')
-        img_byte = file_img.read()
-        file_img.close()
+        return output_data + img_data[data_pointer:]
 
-        if (img_path.split(".")[-1] == "png"):
-            data_header = img_byte[0:8]
-            data_placeholder = img_byte[8:]
-        elif (img_path.split(".")[-1] == "bmp"):
-            data_header = img_byte[0:54]
-            data_placeholder = img_byte[54:]
+    def extract(img_data):
 
         def getBit(data, byte_pointer, bit_pointer):
             return (data[byte_pointer] >> bit_pointer) & 1
@@ -99,7 +76,7 @@ class imgStego:
         data_bit_pointer = 0
         eod = [False, False, False]
         get_seed = False
-        for byte in data_placeholder:
+        for byte in img_data:
             data_bit = getBit([byte], 0, 0)
             data_byte = data_byte | data_bit
             data_byte = data_byte << 1
@@ -113,7 +90,6 @@ class imgStego:
                     seed = data_byte
                     data_byte = 0
                     random.seed(seed)
-                    print("seed", seed)
                     get_seed = True
 
                 # EOD CHECKER

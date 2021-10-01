@@ -1,8 +1,10 @@
 import wave
 import os
+import sys
 from rc4 import RC4
 from wav_stego import WavStego
 from img_stego import imgStego, is_grey_scale
+from PIL import Image
 
 # file
 filepath = "./yoyo.gif"
@@ -151,27 +153,72 @@ else:
 
 # text
 img_path = "./gray.bmp"
+file_img = open(img_path, 'rb')
+img_byte = file_img.read()
+file_img.close()
+data_header = img_byte[0:54]
+img_data = img_byte[54:]
 text_in = "ini gambar"
 text_bin = text_in.encode("utf-8")
+max_cap = len(img_data) // 8 - 4
 
 print("===== Inserting =====")
 print("BMP File:", img_path)
 print("Inserted Text:", text_in)
-print("Inserted Text:", len(text_bin))
+print("Max capacity:", max_cap, "bytes")
+print("Inserted Text:", len(text_bin), "bytes")
 
-insert_out = imgStego.insert(img_path, text_bin, 2)
+insert_out = imgStego.insert(img_data, text_bin, 2)
 
 out_path = "gray_out.bmp"
 img_out = open(out_path, "wb")
-img_out.write(insert_out)
+img_out.write(data_header + insert_out)
 print("Output IMG:", out_path)
 
 print("=====EXTRACTING=====")
 print("IMG File:", out_path)
 
-extract_out = imgStego.extract(out_path)
+file_img = open(out_path, 'rb')
+img_byte = file_img.read()
+file_img.close()
+data_header = img_byte[0:54]
+img_data = img_byte[54:]
 
-# print(extract_out)
+extract_out = imgStego.extract(img_data)
+
+print("Extracted Text:", extract_out.decode("utf-8"))
+
+# text
+img_path = "./kucing.png"
+img = Image.open(img_path)
+out_data = b"".join([byte.to_bytes(1, sys.byteorder)
+                    for pixel in list(img.getdata()) for byte in pixel])
+text_in = "ini gambar"
+text_bin = text_in.encode("utf-8")
+max_cap = len(img_data) // 8 - 4
+
+print("===== Inserting =====")
+print("PNG File:", img_path)
+print("Inserted Text:", text_in)
+print("Max capacity:", max_cap, "bytes")
+print("Inserted Text:", len(text_bin), "bytes")
+
+insert_out = imgStego.insert(out_data, text_bin, 2)
+
+out_path = "kucing_out.png"
+img_out = Image.frombytes(img.mode, img.size, insert_out)
+img_out.save(out_path)
+print("Output IMG:", out_path)
+
+print("=====EXTRACTING=====")
+print("IMG File:", out_path)
+
+img = Image.open(out_path)
+out_data = b"".join([byte.to_bytes(1, sys.byteorder)
+                    for pixel in list(img.getdata()) for byte in pixel])
+
+extract_out = imgStego.extract(out_data)
+
 print("Extracted Text:", extract_out.decode("utf-8"))
 print()
 
